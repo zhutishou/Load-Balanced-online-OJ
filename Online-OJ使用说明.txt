@@ -1,0 +1,23 @@
+一.介绍
+  该项目旨在实现类似leedcode在线题目列表、在线编程与结果判定功能，相比与leedcode，我们这里是简化实现
+
+二.技术栈
+  C++ STL、Boost标准库、cpp-httplib、多进程、多线程、json序列化与反序列化、MySQL、http+css+js、负载均衡
+
+三.系统环境
+  Linux-Ubuntu Vscode2022 MySQL Workbench
+
+四.项目实现过程
+  该项目我们分为三个模块，分别在三个文件夹中，如下：
+  comm:实现公共模块内容
+  compile_server:编译与运行模块
+  oj_server:获取题目列表、查看题目编写界面、负载均衡以及其他需要的功能
+具体流程如下：
+1.编写编译模块
+在compile_server目录中我们实现一个编译功能的文件:compiler.hpp,该文件我们只负责编译功能，能够在temp目录下生成.cpp、.exe、.compiler_error三个文件，在compile_server.cc文件调用下完成编译功能
+
+2.编写日志模块
+对于一个项目日志模块必不可少，在comm目录下，我们生成一个Log.hpp文件完成日志功能，补充：该目录下util.hpp文件是负责编写一些工具类
+
+3.编写运行模块
+在compile_server目录下编写running.hpp文件，生成.stdin、.stdout、.stderr三个文件(temp中)
