@@ -24,17 +24,17 @@ namespace cx_log
         //添加日志等级
         std::string message = "[";
         message += level;
-        message += "]:";
+        message += "]";
 
         //添加报错文件名
         message += "[";
         message += file_name;
-        message += "]:"
+        message += "]";
 
         //添加报错行数
         message += "[";
         message += std::to_string(line);
-        message += "]:";
+        message += "]";
 
         //添加时间戳
         message += "[";
@@ -49,5 +49,6 @@ namespace cx_log
 
     //采取宏方式来打印日志信息
     //注意：当用宏来处理enum时，如果想打印的是字符串，可以加上#
-    #define LOG(level) Log(#level,_FILE_,_LINE_)
+    //#define LOG(level) Log(#level,_FILE_,_LINE_)---错误写法，注意是两个'_'
+    #define LOG(level) Log(#level,__FILE__,__LINE__)
 }
