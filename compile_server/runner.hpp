@@ -6,6 +6,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/wait.h>
+#include <time.h>
+#include <sys/resource.h>
 
 #include "../comm/log.hpp"
 #include "../comm/util.hpp"
@@ -28,9 +31,24 @@ namespace cx_runner
         {}
         ~Runner()
         {}
-        
+        //提供设置进程占用资源大小的接口
+        static void SetProcLimit(int cpu_limit,int mem_limit)
+        {
+            //设置CPU占用时长
+            struct rlimit cpu_rlimit;
+            cpu_rlimit.rlim_max = RLIM_INFINITY;
+            cpu_rlimit.rlim_cur = cpu_limit;
+            setrlimit(RLIMIT_CPU,&cpu_rlimit);//超出返回信号为6
+            //设置内存大小
+            struct rlimit mem_rlimit;
+            mem_rlimit.rlim_max = RLIM_INFINITY;
+            mem_rlimit.rlim_cur = mem_limit*1024;//MB转换为KB
+            setrlimit(RLIMIT_AS,&mem_rlimit);//超出返回信号为24
+        }
         //专门处理运行的文件
-        static int Run(const std::string& file_name)
+        //cpu_limit---cpu运行的最大时间
+        //mem_limit---程序能使用的最大内存,MB形式
+        static int Run(const std::string& file_name,int cpu_limit,int mem_limit)
         {
             //当一段代码运行会出现三种结果：1.代码未运行成功    2.代码运行完毕，结果错误    3.代码运行完毕，结果正确
             //该文件不需要考虑代码运行完毕结果正确与否，这是由我们的测试样例来决定的，该文件只注重能否正确运行完毕
@@ -74,6 +92,8 @@ namespace cx_runner
                 dup2(_stdin_fd,0);
                 dup2(_stdout_fd,1);
                 dup2(_stderr_fd,2);
+                //设置时间和空间限制（注意：这是在线OJ的一个不可忽略点）
+                SetProcLimit(cpu_limit,mem_limit);
                 execl(_execute.c_str(),_execute.c_str(),nullptr);//第一个参数是要执行的内容，第二个参数是如何执行该内容
                 //结尾要加nullptr
                 exit(1);//失败退出
