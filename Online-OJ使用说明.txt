@@ -23,4 +23,6 @@
 在compile_server目录下编写running.hpp文件，生成.stdin、.stdout、.stderr三个文件(temp中)，利用子进程来运行文件，并返回一个信号判断结果正确与否，关键点：在线OJ项目是需要保证时间和空间限制的，所以我们通过RLIMIT来限制时间与空间
 
 4.编写编译运行模块
+在compile_server目录下添加一个compile_run.hpp文件，该文件负责将文件编译运行整合，当compile_server.cc文件调用该文件时就可以形成编译运行一整套体系，同时在util.hpp文件中增加一些新的文件操作和当临时文件使用结束后，在compile_run.hpp中将其形成的一系列文件删除，减少空间消耗
 
+5.编写服务器模块
