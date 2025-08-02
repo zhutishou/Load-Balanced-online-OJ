@@ -6,11 +6,39 @@
 #include <atomic>
 #include <sys/time.h>
 #include <sys/stat.h>
+#include <fstream>
+
+//#include "log.hpp"
 
 //该文件作用：用来存放一些工具类，并实现工具类中各函数功能
 
 namespace cx_util
 {
+        //时间戳获取类
+    class TimeUtil
+    {
+    public:
+        //获取当前时间戳
+        static std::string GetTimeStamp()
+        {
+            //利用 struct timeval结构体
+            struct timeval _time;
+            //获取当前时间
+            gettimeofday(&_time,nullptr);
+            //返回毫秒数,time_t 要转换为字符串
+            return std::to_string(_time.tv_sec);
+        }
+        //获取毫秒时间戳
+        static std::string GettimeMs()
+        {
+            struct timeval _time;
+            gettimeofday(&_time,nullptr);
+            return std::to_string(_time.tv_sec * 1000 + _time.tv_usec / 1000);
+        }
+    private:
+
+    };
+
     //路径处理工具：
     const std::string temp_name = "./temp/";
 
@@ -83,28 +111,55 @@ namespace cx_util
             }
             return false;
         }
-
-    private:
-
-        
-    };
-
-    //时间戳获取类
-    class TimeUtil
-    {
-    public:
-        //获取当前时间戳
-        static std::string GetTimeStamp()
+        //获取文件临时名称
+        static std::string UniqFileName()
         {
-            //利用 struct timeval结构体
-            struct timeval _time;
-            //获取当前时间
-            gettimeofday(&_time,nullptr);
-            //返回毫秒数,time_t 要转换为字符串
-            return std::to_string(_time.tv_sec);
+            //定义一个原子性变量,通过毫秒级时间戳+该变量保证文件名称唯一性
+            static std::atomic_uint id(0);
+            id++;//从1开始计数
+            std::string ms = TimeUtil::GettimeMs();
+            std::string unq_id = to_string(id);
+            return ms + "_" + unq_id;
         }
-
+        static bool WriterFile(const std::string& target_file,const std::string& content)
+        {
+            std::ofstream out(target_file);
+            //判断
+            if(!out.is_open())
+            {
+                //LOG(ERROR)<<"写入文件打开失败"<<"\n";
+                return false;
+            }
+            //写入
+            out.write(content.c_str(),content.size());
+            out.close();
+            return true;
+        }
+        static bool ReadFile(const std::string& target_file,std::string* content,bool keep = false)
+        {
+            //先把之前content内容清空
+            (*content).clear();
+            //打开读文件操作
+            std::ifstream in(target_file);
+            //判断
+            if(!in.is_open())
+            {
+                //LOG(ERROR)<<"读取文件打开失败"<<"\n";
+                return false;
+            }
+            //按行读取,是否需要'\n'根据keep决定
+            std::string line;
+            while(std::getline(in,line))
+            {
+                (*content) += line;
+                if(keep)
+                    (*content) += "\n";
+            }
+            //关闭
+            in.close();
+            return true;
+        }
     private:
-        
+       
     };
 }
