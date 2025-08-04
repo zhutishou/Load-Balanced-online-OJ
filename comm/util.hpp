@@ -7,6 +7,7 @@
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <fstream>
+#include <boost/algorithm/string.hpp>
 
 //#include "log.hpp"
 
@@ -14,7 +15,17 @@
 
 namespace cx_util
 {
-        //时间戳获取类
+    //切分字符串类
+    class StringUtil
+    {
+    public:
+        static void SplitString(const std::string& str,vector<std::string>* tokens,const std::string& sep)
+        {
+            boost::split((*tokens), str, boost::is_any_of(sep), boost::algorithm::token_compress_on);
+        }
+    };
+
+    //时间戳获取类
     class TimeUtil
     {
     public:
