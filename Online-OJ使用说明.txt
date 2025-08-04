@@ -38,6 +38,10 @@ C: control, 控制器，就是我们的核心业务逻辑
 1.实现路由器请求功能
 编写oj_server.cc文件，将用户请求的内容发送到服务器中，实现类似路由器功能，该部分还是利用现成的httplib实现
 
+2.实现MVC中第一个部分---Model,该部分将questions目录下列表和题目等相关信息加载和向用户显示，实现三个函数:LoadQuestionList-加载题目列表、GetAllQuestions-向用户提供所有题目列表、GetOneQuestion-根据题目编号找到具体的某题，在util.hpp文件中利用boost库中split函数实现字符串切分类StringUtil
+
+3.
+
 
 
 
