@@ -1,0 +1,62 @@
+#pragma once
+
+#include <iostream>
+#include <string>
+
+#include "oj_model.hpp"
+#include "../comm/util.hpp"
+#include "../comm/log.hpp"
+
+//用于处理核心业务
+
+namespace cx_control
+{
+    //引入头文件
+    using namespace cx_log;
+    using namespace cx_util;
+    using namespace cx_model;
+
+    //核心控制器
+    class Control
+    {
+    public:
+        Control(){}
+        ~Control(){}
+        //根据题目数据构建网页
+        bool AllQuestions(std::string* html)
+        {
+            vector<struct Question> all;
+            //利用Model类函数
+            if(_model.GetAllQuestions(&all))
+            {
+                //获取题目信息成功，根据题目列表构建网页
+                _view.AllExpandHtml(all, html);
+                return true;
+            }
+            else
+            {
+                *html = "获取题目失败，形成列表失败";
+                return false;
+            }
+        }
+        //根据某道题目构建网页
+        bool Questions(const std::string number,std::string* html)
+        {
+            struct Question q;
+            if(_model.GetOneQuestion(number,&q))
+            {
+                //跳转到具体某题时，获取题目成功
+                _view.OneExpandHtml(q, html);
+                return true;
+            }
+            else
+            {
+                *html = "指定题目: " + number + " 不存在!";
+                return false;
+            }
+        }
+    private:
+        Model _model;//提供后台数据
+        View _view;//提供html渲染功能
+    };
+}
