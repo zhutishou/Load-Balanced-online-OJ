@@ -40,10 +40,18 @@ C: control, 控制器，就是我们的核心业务逻辑
 
 2.实现MVC中第一个部分---Model,该部分将questions目录下列表和题目等相关信息加载和向用户显示，实现三个函数:LoadQuestionList-加载题目列表、GetAllQuestions-向用户提供所有题目列表、GetOneQuestion-根据题目编号找到具体的某题，在util.hpp文件中利用boost库中split函数实现字符串切分类StringUtil
 
-3.
+3.实现MVC中的View---oj_view.hpp，该文件作用是用来进行页面渲染的，面对template_html中文件需要渲染的内容都是在该文件中实现，具体实现过程见代码详解
 
+4.实现MVC中的Control---oj_control.hpp，该文件是我们这个项目的核心业务处理部分，将oj_model.hpp和oj_view.hpp文件功能使用，方便oj_server.cc直接通过oj_control.hpp文件调用，同时也实现负载均衡，通过调用conf文件中主机IP+Port形式调用可使用的主机
 
+5.实现oj_server.cc功能，当用户将浏览器中代码发送给我们时，我们利用该文件功能获取和调用编译运行服务，并返回给用户显示结果
 
+(3):编写前端内容(html+css+js)
+1.实现wwwroot中首页index.html
+2.实现template_html中all_questions.html
+3.实现template_html中one_question.html
+
+注:前端代码不做讲解！
 
 
 
