@@ -19,7 +19,7 @@ namespace cx_util
     class StringUtil
     {
     public:
-        static void SplitString(const std::string& str,vector<std::string>* tokens,const std::string& sep)
+        static void SplitString(const std::string& str,std::vector<std::string>* tokens,const std::string& sep)
         {
             boost::split((*tokens), str, boost::is_any_of(sep), boost::algorithm::token_compress_on);
         }
