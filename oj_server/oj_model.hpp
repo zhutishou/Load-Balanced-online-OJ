@@ -50,7 +50,7 @@ namespace cx_model
         {
             //加载配置文件 --- questions/questions.list + 题目编号文件
             //打开文件
-            ifstream in(questions_list);
+            std::ifstream in(questions_list);
             //判断
             if(!in.is_open())
             {
@@ -61,7 +61,7 @@ namespace cx_model
             std::string line;
             while(std::getline(in,line))
             {
-                vector<std::string> tokens;
+                std::vector<std::string> tokens;
                 StringUtil::SplitString(line, &tokens, " ");
                 //1 判断回文数 简单 1 30000
                 //判断size是否正确
@@ -97,7 +97,7 @@ namespace cx_model
         }
 
         //向用户提供所有题目列表
-        bool GetAllQuestions(vector<Question> *out)
+        bool GetAllQuestions(std::vector<Question> *out)
         {
             //判断是否存在题目
             if(questions.size() == 0)
@@ -108,7 +108,7 @@ namespace cx_model
             //将unordered_map中second属性插入out数组中
             for(const auto& q : questions)
             {
-                *out->push_back(q.second);
+                out->push_back(q.second);
             }
             return true;
         }
@@ -128,6 +128,6 @@ namespace cx_model
         }
     private:
         //根据题目编号找到相应的题目信息
-        unordered_map<std::string,Question> questions;
+        std::unordered_map<std::string,Question> questions;
     };
 }
