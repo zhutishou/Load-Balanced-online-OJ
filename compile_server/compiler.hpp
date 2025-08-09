@@ -60,7 +60,7 @@ namespace cx_compiler
                 //子进程处理部分：
                 //我们现在先只实现C++:g++ -o dest src -std=c++11
                 //利用execlp函数
-                execlp("g++","g++","-o",PathUtil::Exe(file_name).c_str(),PathUtil::Src(file_name).c_str(),"-std=c++11",nullptr);//注意-std=c++11,std前面要加一个-
+                execlp("g++","g++","-o",PathUtil::Exe(file_name).c_str(),"-D","COMPILER_ONLINE",PathUtil::Src(file_name).c_str(),"-std=c++11",nullptr);//注意-std=c++11,std前面要加一个-
                 //注意点：string要转换为char*  execlp函数输入结束要加上nullptr
 
                 //程序走到这里说明 g++编译器启动失败，请检查参数
