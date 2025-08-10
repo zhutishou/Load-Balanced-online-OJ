@@ -14,7 +14,7 @@ void Test1()
     } 
     else
     {
-        std::cout << "没有通过用例1, 测试的值是: 121" << std::endl;
+        std::cout << "通过用例1, 测试的值是: 121" << std::endl;
     }
 }
 
@@ -28,7 +28,7 @@ void Test2()
     } 
     else
     {
-        std::cout << "没有通过用例2, 测试的值是: -121" << std::endl;
+        std::cout << "通过用例2, 测试的值是: -121" << std::endl;
     }
 }
 
@@ -42,15 +42,15 @@ void Test3()
     } 
     else
     {
-        std::cout << "没有通过用例3, 测试的值是: 10" << std::endl;
+        std::cout << "通过用例3, 测试的值是: 10" << std::endl;
     }
 }
 
 int main()
 {
     //测试用例：
-    test1();
-    test2();
-    test3();
+    Test1();
+    Test2();
+    Test3();
     return 0;
 }
