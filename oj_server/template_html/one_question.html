@@ -1,1 +1,341 @@
-//暂无
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{number}}.{{title}}</title>
+    <!-- 引入ACE插件 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/ace.js" type="text/javascript"
+        charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/ext-language_tools.js" type="text/javascript"
+        charset="utf-8"></script>
+    <!-- 引入jquery CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- 引入Google字体 -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Source+Code+Pro:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --main-bg: #f5f7fa;
+            --nav-bg: #2c3e50;
+            --editor-bg: #282c34;
+            --panel-bg: #ffffff;
+            --primary-color: #3498db;
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+            --text-color: #333333;
+            --text-light: #7f8c8d;
+            --border-color: #e0e0e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--main-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow: hidden;
+        }
+
+        .container {
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar {
+            width: 100%;
+            height: 60px;
+            background-color: var(--nav-bg);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            font-family: 'Noto Sans SC', sans-serif;
+            z-index: 10;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 400;
+            padding: 8px 16px;
+            margin: 0 5px;
+            transition: all 0.2s ease;
+        }
+
+        .navbar a:hover {
+            color: var(--success-color);
+        }
+
+        .navbar .login {
+            margin-left: auto;
+            background-color: var(--success-color);
+            border-radius: 4px;
+        }
+
+        .navbar .login:hover {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 60px);
+            position: relative;
+        }
+
+        .editor-section {
+            display: flex;
+            flex: 1;
+            min-height: 0;
+            background-color: var(--panel-bg);
+            margin: 10px;
+            border-radius: 6px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .left_desc {
+            width: 50%;
+            padding: 20px;
+            overflow-y: auto;
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--panel-bg);
+            border-right: 1px solid var(--border-color);
+        }
+
+        .left_desc h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--nav-bg);
+            font-weight: 500;
+        }
+
+        .left_desc pre {
+            font-size: 1rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            color: var(--text-color);
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+
+        .right_code {
+            width: 50%;
+            position: relative;
+        }
+
+        .ace_editor {
+            height: 100%;
+            font-family: 'Source Code Pro', monospace;
+            font-size: 16px;
+            background-color: var(--editor-bg);
+        }
+
+        .result-section {
+            height: 0;
+            transition: height 0.3s ease;
+            background-color: var(--panel-bg);
+            margin: 0 10px 10px;
+            border-radius: 0 0 6px 6px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .result-section.active {
+            height: 200px;
+        }
+
+        .result-container {
+            padding: 15px;
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.95rem;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .action-panel {
+            display: flex;
+            justify-content: flex-end;
+            padding: 10px;
+            background-color: var(--panel-bg);
+        }
+
+        .btn-submit {
+            width: 120px;
+            height: 50px;
+            font-size: 1rem;
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: #27ae60;
+        }
+
+        .result-success {
+            color: var(--success-color);
+        }
+
+        .result-error {
+            color: var(--error-color);
+        }
+
+        @media (max-width: 768px) {
+            .editor-section {
+                flex-direction: column;
+            }
+
+            .left_desc,
+            .right_code {
+                width: 100%;
+            }
+
+            .left_desc {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .ace_editor {
+                height: 400px;
+            }
+
+            .result-section.active {
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- 导航栏 -->
+        <div class="navbar">
+            <a href="/">首页</a>
+            <a href="/all_questions">题库</a>
+            <a href="#">竞赛</a>
+            <a href="#">讨论</a>
+            <a href="#">求职</a>
+            <a class="login" href="#">登录</a>
+        </div>
+
+        <div class="main-content">
+            <!-- 编辑器区域 -->
+            <div class="editor-section">
+                <div class="left_desc">
+                    <h3><span id="number">{{number}}</span>.{{title}}_{{star}}</h3>
+                    <pre>{{desc}}</pre>
+                </div>
+                <div class="right_code">
+                    <pre id="code" class="ace_editor"><textarea class="ace_text-input">{{pre_code}}</textarea></pre>
+                </div>
+            </div>
+
+            <!-- 操作面板 -->
+            <div class="action-panel">
+                <button class="btn-submit" onclick="submit()">提交代码</button>
+            </div>
+
+            <!-- 结果区域 - 初始隐藏 -->
+            <div class="result-section" id="result-section">
+                <div class="result-container" id="result-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        //初始化对象
+        editor = ace.edit("code");
+
+        //设置风格和语言
+        editor.setTheme("ace/theme/monokai");
+        editor.session.setMode("ace/mode/c_cpp");
+
+        // 字体大小
+        editor.setFontSize(16);
+        // 设置默认制表符的大小:
+        editor.getSession().setTabSize(4);
+
+        // 设置只读（true时只读，用于展示代码）
+        editor.setReadOnly(false);
+
+        // 启用提示菜单
+        ace.require("ace/ext/language_tools");
+        editor.setOptions({
+            enableBasicAutocompletion: true,
+            enableSnippets: true,
+            enableLiveAutocompletion: true
+        });
+
+        function submit() {
+            var code = editor.getSession().getValue();
+            var number = $("#number").text();
+            var judge_url = "/judge/" + number;
+
+            // 显示加载状态
+            var resultContainer = $("#result-container");
+            var resultSection = $("#result-section");
+
+            resultContainer.html('<div class="result-output">正在提交代码，请稍候...</div>');
+            resultSection.addClass("active");
+
+            $.ajax({
+                method: 'POST',
+                url: judge_url,
+                dataType: 'json',
+                contentType: 'application/json;charset=utf-8',
+                data: JSON.stringify({
+                    'code': code,
+                    'input': ''
+                }),
+                success: function (data) {
+                    showResult(data);
+                },
+                error: function (xhr, status, error) {
+                    resultContainer.html('<div class="result-error">提交失败: ' + error + '</div>');
+                }
+            });
+        }
+
+        function showResult(data) {
+            var resultContainer = $("#result-container");
+            resultContainer.empty();
+
+            if (data.status !== 0) {
+                // 编译或运行错误
+                resultContainer.append('<div class="result-error">' + data.reason + '</div>');
+                if (data.stderr) {
+                    resultContainer.append('<pre class="result-error">' + data.stderr + '</pre>');
+                }
+            } else {
+                // 成功运行
+                resultContainer.append('<div class="result-success">' + data.reason + '</div>');
+                if (data.stdout) {
+                    resultContainer.append('<pre>' + data.stdout + '</pre>');
+                }
+                if (data.stderr) {
+                    resultContainer.append('<pre class="result-error">' + data.stderr + '</pre>');
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
