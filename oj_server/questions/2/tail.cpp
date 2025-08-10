@@ -30,10 +30,23 @@ void Test2()
     }
 }
 
+void Test3()
+{
+    vector<int> v = {3,6,8,10,2,1};
+    int max = Solution().Max(v);
+    if (max == 10)
+    {
+        std::cout << "Test 3 .... OK" << std::endl;
+    }
+    else
+    {
+        std::cout << "Test 3 .... Failed" << std::endl;
+    }
+}
 int main()
 {
     Test1();
     Test2();
-
+    Test3();
     return 0;
 }
