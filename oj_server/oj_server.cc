@@ -8,13 +8,22 @@
 using namespace cx_control;
 using namespace httplib;
 
+static Control *ctrl_ptr = nullptr;
+void Recovery(int signo)
+{
+    ctrl_ptr->RecoveryMachine();
+}
+
+
 
 int main()
 {
+    signal(SIGQUIT, Recovery);
     //用户请求的路由器功能
     Server svr;
     //定义一个控制器类对象
     Control ctrl;
+    ctrl_ptr = &ctrl;
 
     //1.获取题目列表
     svr.Get("/all_questions",[&ctrl](const Request& req,Response& resp){
