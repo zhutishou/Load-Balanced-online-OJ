@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include <mutex>
 #include <cassert>
 #include <jsoncpp/json/json.h>
@@ -57,6 +58,12 @@ namespace cx_control
             //减少负载
             load--;
             //解锁
+            _mtx->unlock();
+        }
+        void ResetLoad()
+        {
+            _mtx->lock();
+            load = 0;
             _mtx->unlock();
         }
         //获取主机负载
@@ -168,6 +175,7 @@ namespace cx_control
                 if(*iter == which)
                 {
                     //将该主机下线
+                    machines[which].ResetLoad();
                     online.erase(iter);
                     offline.push_back(which);
                     break;
@@ -178,7 +186,13 @@ namespace cx_control
         }
         void OnlineMachine()
         {
-            //后期添加
+
+            mtx.lock();
+            online.insert(online.end(), offline.begin(), offline.end());
+            offline.erase(offline.begin(), offline.end());
+            mtx.unlock();
+            LOG(INFO) << "所有的主机有上线啦!" << "\n";
+            
         }
         //only for test
         void ShowMachines()
@@ -218,6 +232,10 @@ namespace cx_control
     public:
         Control(){}
         ~Control(){}
+        void RecoveryMachine()
+        {
+            _load_blance.OnlineMachine();
+        }
         //根据题目数据构建网页
         bool AllQuestions(std::string* html)
         {
@@ -225,6 +243,10 @@ namespace cx_control
             //利用Model类函数
             if(_model.GetAllQuestions(&all))
             {
+                //排序，使题目按顺序显示asc
+                sort(all.begin(),all.end(),[](const struct Question& q1,const Question& q2){
+                    return atoi(q1.number.c_str()) < atoi(q2.number.c_str());
+                });
                 //获取题目信息成功，根据题目列表构建网页
                 _view.AllExpandHtml(all, html);
                 return true;
